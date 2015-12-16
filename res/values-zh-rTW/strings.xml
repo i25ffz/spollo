@@ -38,6 +38,7 @@
   <string name="menu_detailed">詳細</string>
   <string name="menu_grid">格狀</string>
   <string name="menu_view_as">檢視</string>
+  <string name="menu_download_lyrics">獲取歌詞</string>
   <string name="add_to_playlist">加入播放清單</string>
   <string name="add_to_favorites">加入最愛</string>
   <string name="add_to_queue">加入隊列</string>
@@ -126,4 +127,6 @@
   <string name="empty_search">無搜尋結果</string>
   <string name="empty_favorite">您標記為最愛的樂曲將會顯示在這裡。</string>
   <string name="empty_recent">您曾聽過的專輯將會顯示在這裡。試著播放一些音樂。</string>
+  <string name="no_lyrics">無法找到\"<xliff:g id="name">%s</xliff:g>\"的歌詞</string>
+  <string name="try_fetch_lyrics">To fetch lyrics for \"<xliff:g id="name">%s</xliff:g>\" use \"Fetch lyrics\" in the menu.</string>
 </resources>
