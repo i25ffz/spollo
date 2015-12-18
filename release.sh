@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 is_gradle=0
 signed_apk=""
