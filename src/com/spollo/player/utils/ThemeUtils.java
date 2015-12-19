@@ -62,7 +62,7 @@ public class ThemeUtils {
     /**
      * Default package name.
      */
-    public static final String APOLLO_PACKAGE = "com.spollo.player";
+    public static final String SPOLLO_PACKAGE = "com.spollo.player";
 
     /**
      * Current theme package name.
@@ -124,7 +124,7 @@ public class ThemeUtils {
         } catch (final Exception e) {
             // If the user isn't using a theme, then the resources should be
             // Apollo's.
-            setThemePackageName(APOLLO_PACKAGE);
+            setThemePackageName(SPOLLO_PACKAGE);
         }
         // Get the current theme color
         mCurrentThemeColor = PreferenceUtils.getInstance(context).getDefaultThemeColor(context);
@@ -155,7 +155,7 @@ public class ThemeUtils {
      * @return The default theme package name.
      */
     public final String getThemePackageName() {
-        return mPreferences.getString(PACKAGE_NAME, APOLLO_PACKAGE);
+        return mPreferences.getString(PACKAGE_NAME, SPOLLO_PACKAGE);
     }
 
     /**

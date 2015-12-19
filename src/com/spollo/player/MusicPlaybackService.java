@@ -27,6 +27,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
+import android.media.AudioTrack;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -111,7 +112,7 @@ public class MusicPlaybackService extends Service {
      * For backwards compatibility reasons, also provide sticky
      * broadcasts under the music package
      */
-    public static final String APOLLO_PACKAGE_NAME = "com.spollo.player";
+    public static final String SPOLLO_PACKAGE_NAME = "com.spollo.player";
     public static final String MUSIC_PACKAGE_NAME = "com.android.music";
 
     /**
@@ -362,7 +363,7 @@ public class MusicPlaybackService extends Service {
     /**
      * The media player
      */
-    private MultiPlayer mPlayer;
+    private IMusicPlayer mPlayer;
 
     /**
      * The path of the current file to play
@@ -1335,7 +1336,7 @@ public class MusicPlaybackService extends Service {
         sendStickyBroadcast(intent);
 
         final Intent musicIntent = new Intent(intent);
-        musicIntent.setAction(what.replace(APOLLO_PACKAGE_NAME, MUSIC_PACKAGE_NAME));
+        musicIntent.setAction(what.replace(SPOLLO_PACKAGE_NAME, MUSIC_PACKAGE_NAME));
         sendStickyBroadcast(musicIntent);
 
         if (what.equals(META_CHANGED)) {
@@ -2480,7 +2481,189 @@ public class MusicPlaybackService extends Service {
         }
     };
 
-    private static final class MultiPlayer implements MediaPlayer.OnErrorListener,
+    private static  interface IMusicPlayer {
+
+        /**
+         * @param path The path of the file, or the http/rtsp URL of the stream
+         *            you want to play
+         */
+        public void setDataSource(final String path);
+
+        /**
+         * Set the MediaPlayer to start when this MediaPlayer finishes playback.
+         *
+         * @param path The path of the file, or the http/rtsp URL of the stream
+         *            you want to play
+         */
+        public void setNextDataSource(final String path);
+
+        /**
+         * Sets the handler
+         *
+         * @param handler The handler to use
+         */
+        public void setHandler(final Handler handler);
+        
+        /**
+         * @return True if the player is ready to go, false otherwise
+         */
+        public boolean isInitialized();
+
+        /**
+         * Starts or resumes playback.
+         */
+        public void start();
+
+        /**
+         * Resets the MediaPlayer to its uninitialized state.
+         */
+        public void stop();
+
+        /**
+         * Releases resources associated with this MediaPlayer object.
+         */
+        public void release();
+
+        /**
+         * Pauses playback. Call start() to resume.
+         */
+        public void pause();
+
+        /**
+         * Gets the duration of the file.
+         *
+         * @return The duration in milliseconds
+         */
+        public long duration();
+
+        /**
+         * Gets the current playback position.
+         *
+         * @return The current position in milliseconds
+         */
+        public long position();
+
+        /**
+         * Gets the current playback position.
+         *
+         * @param whereto The offset in milliseconds from the start to seek to
+         * @return The offset in milliseconds from the start to seek to
+         */
+        public long seek(final long whereto);
+
+        /**
+         * Sets the volume on this player.
+         *
+         * @param vol Left and right volume scalar
+         */
+        public void setVolume(final float vol);
+
+        /**
+         * Sets the audio session ID.
+         *
+         * @param sessionId The audio session ID
+         */
+        public void setAudioSessionId(final int sessionId);
+
+        /**
+         * Returns the audio session ID.
+         *
+         * @return The current audio session ID.
+         */
+        public int getAudioSessionId();
+    	
+    }
+    
+    private static final class AudioPlayer implements IMusicPlayer {
+    	private AudioTrack mAudioTrack;
+
+		@Override
+		public void setDataSource(String path) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void setNextDataSource(String path) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void setHandler(Handler handler) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public boolean isInitialized() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		
+		@Override
+		public void start() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void stop() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void release() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void pause() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public long duration() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public long position() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public long seek(long whereto) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public void setVolume(float vol) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void setAudioSessionId(int sessionId) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public int getAudioSessionId() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+    	
+    }
+    
+    private static final class MultiPlayer implements IMusicPlayer, MediaPlayer.OnErrorListener,
             MediaPlayer.OnCompletionListener {
 
         private final WeakReference<MusicPlaybackService> mService;
@@ -2488,7 +2671,7 @@ public class MusicPlaybackService extends Service {
         private MediaPlayer mCurrentMediaPlayer = new MediaPlayer();
 
         private MediaPlayer mNextMediaPlayer;
-
+        
         private Handler mHandler;
 
         private boolean mIsInitialized = false;
@@ -2505,6 +2688,7 @@ public class MusicPlaybackService extends Service {
          * @param path The path of the file, or the http/rtsp URL of the stream
          *            you want to play
          */
+        @Override
         public void setDataSource(final String path) {
             mIsInitialized = setDataSourceImpl(mCurrentMediaPlayer, path);
             if (mIsInitialized) {
@@ -2552,6 +2736,7 @@ public class MusicPlaybackService extends Service {
          * @param path The path of the file, or the http/rtsp URL of the stream
          *            you want to play
          */
+        @Override
         public void setNextDataSource(final String path) {
             try {
                 mCurrentMediaPlayer.setNextMediaPlayer(null);
@@ -2586,6 +2771,7 @@ public class MusicPlaybackService extends Service {
          *
          * @param handler The handler to use
          */
+        @Override
         public void setHandler(final Handler handler) {
             mHandler = handler;
         }
@@ -2593,6 +2779,7 @@ public class MusicPlaybackService extends Service {
         /**
          * @return True if the player is ready to go, false otherwise
          */
+        @Override
         public boolean isInitialized() {
             return mIsInitialized;
         }
@@ -2600,6 +2787,7 @@ public class MusicPlaybackService extends Service {
         /**
          * Starts or resumes playback.
          */
+        @Override
         public void start() {
             mCurrentMediaPlayer.start();
         }
@@ -2607,6 +2795,7 @@ public class MusicPlaybackService extends Service {
         /**
          * Resets the MediaPlayer to its uninitialized state.
          */
+        @Override
         public void stop() {
             mCurrentMediaPlayer.reset();
             mIsInitialized = false;
@@ -2615,6 +2804,7 @@ public class MusicPlaybackService extends Service {
         /**
          * Releases resources associated with this MediaPlayer object.
          */
+        @Override
         public void release() {
             stop();
             mCurrentMediaPlayer.release();
@@ -2623,6 +2813,7 @@ public class MusicPlaybackService extends Service {
         /**
          * Pauses playback. Call start() to resume.
          */
+        @Override
         public void pause() {
             mCurrentMediaPlayer.pause();
         }
@@ -2632,6 +2823,7 @@ public class MusicPlaybackService extends Service {
          *
          * @return The duration in milliseconds
          */
+        @Override
         public long duration() {
             return mCurrentMediaPlayer.getDuration();
         }
@@ -2641,6 +2833,7 @@ public class MusicPlaybackService extends Service {
          *
          * @return The current position in milliseconds
          */
+        @Override
         public long position() {
             return mCurrentMediaPlayer.getCurrentPosition();
         }
@@ -2651,6 +2844,7 @@ public class MusicPlaybackService extends Service {
          * @param whereto The offset in milliseconds from the start to seek to
          * @return The offset in milliseconds from the start to seek to
          */
+        @Override
         public long seek(final long whereto) {
             mCurrentMediaPlayer.seekTo((int)whereto);
             return whereto;
@@ -2661,6 +2855,7 @@ public class MusicPlaybackService extends Service {
          *
          * @param vol Left and right volume scalar
          */
+        @Override
         public void setVolume(final float vol) {
             mCurrentMediaPlayer.setVolume(vol, vol);
         }
@@ -2670,6 +2865,7 @@ public class MusicPlaybackService extends Service {
          *
          * @param sessionId The audio session ID
          */
+        @Override
         public void setAudioSessionId(final int sessionId) {
             mCurrentMediaPlayer.setAudioSessionId(sessionId);
         }
@@ -2679,6 +2875,7 @@ public class MusicPlaybackService extends Service {
          *
          * @return The current audio session ID.
          */
+        @Override
         public int getAudioSessionId() {
             return mCurrentMediaPlayer.getAudioSessionId();
         }
@@ -2718,6 +2915,7 @@ public class MusicPlaybackService extends Service {
                 mHandler.sendEmptyMessage(RELEASE_WAKELOCK);
             }
         }
+        
     }
 
     private static final class ServiceStub extends IApolloService.Stub {

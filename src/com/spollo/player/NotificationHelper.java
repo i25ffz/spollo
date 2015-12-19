@@ -38,7 +38,7 @@ public class NotificationHelper {
     /**
      * Notification ID
      */
-    private static final int APOLLO_MUSIC_SERVICE = 1;
+    private static final int SPOLLO_MUSIC_SERVICE = 1;
 
     /**
      * NotificationManager
@@ -109,7 +109,7 @@ public class NotificationHelper {
             // Set up the expanded content view
             initExpandedLayout(trackName, albumName, artistName, albumArt);
         }
-        mService.startForeground(APOLLO_MUSIC_SERVICE, mNotification);
+        mService.startForeground(SPOLLO_MUSIC_SERVICE, mNotification);
     }
 
     /**
@@ -138,7 +138,7 @@ public class NotificationHelper {
             mExpandedView.setImageViewResource(R.id.notification_expanded_base_play,
                     isPlaying ? R.drawable.btn_playback_pause : R.drawable.btn_playback_play);
         }
-        mNotificationManager.notify(APOLLO_MUSIC_SERVICE, mNotification);
+        mNotificationManager.notify(SPOLLO_MUSIC_SERVICE, mNotification);
     }
 
     /**
